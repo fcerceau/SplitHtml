@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Código Simple</title>
+    <link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="agregado.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>	
+
+</head>
+    <!-- Modal -->
+<div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fileModalLabel">Subir/Leer Zip</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="zipForm">
+                    <input type="file" id="zipFile" class="form-control-file" accept=".zip" />
+                    <small id="fileName" class="form-text text-muted">Ningún archivo seleccionado</small>
+                    <div id="saveFileNameGroup" class="form-group mt-2" style="display: none;">
+                        <label for="saveFileName">Nombre del archivo ZIP:</label>
+                        <input type="text" id="saveFileName" class="form-control" placeholder="nombre del archivo zip" />
+                    </div>
+                    <button id="leerzip" type="button" class="btn btn-primary mt-2" onclick="readZip()">Leer Zip</button>
+                    <button id="dl" type="button" class="btn btn-success mt-2" onclick="prepareToDownload()">Grabar Zip</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<body>
+    <div class="top-bar">
+	    <img id="logo" src="f.jpg">
+		<div id="fc">&copy; FC Software</div>
+        <div class="preview-controls">
+            <label for="previewWidth">Preview:</label>
+            <input type="number" id="previewWidth" min="100" max="2000" value="800" step="10">
+            <span id="widthValue">800px (50%)</span>
+            <button id="decreaseWidth">-</button>
+            <button id="increaseWidth">+</button>
+        </div>
+	   <button id="openModal" class="btn btn-primary" data-toggle="modal" data-target="#fileModal"><i class="fas fa-file-archive"></i></button>
+	   <button id="clearall " class="btn btn-danger" onclick="ClearAll()">  X</button>
+	    <button id="clearall " class="btn btn-success" onclick="source()"><i class="fas fa-code"></i></button>
+	  
+    </div>
+    <div class="main-container">
+        <div class="editor-container">
+            <div class="editor-section">
+                <div class="editor-header">
+                    <span>HTML</span>
+                    <button class="copy-btn" data-target="htmlEditor"><i class="fas fa-copy icon-btn"></i></button>
+                </div>
+                <textarea id="htmlEditor" placeholder="HTML"></textarea>
+            </div>
+            <div class="editor-section">
+                <div class="editor-header">
+                    <span>CSS</span>
+                    <button class="copy-btn" data-target="cssEditor"><i class="fas fa-copy icon-btn"></i></button>
+                </div>
+                <textarea id="cssEditor" placeholder="CSS"></textarea>
+            </div>
+            <div class="editor-section">
+                <div class="editor-header">
+                    <span>JavaScript</span>
+                    <button class="copy-btn" data-target="jsEditor"><i class="fas fa-copy icon-btn"></i></button>
+                </div>
+                <textarea id="jsEditor" placeholder="JavaScript"></textarea>
+            </div>
+        </div>
+        <div class="resizer" id="resizer"></div>
+        <div class="preview-container">
+            <iframe id="preview"></iframe>
+        </div>
+    </div>
+    <script src="script.js"></script>
+	<script src="modal.js"></script>		
+</body>
+</html>
