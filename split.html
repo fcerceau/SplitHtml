@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Separator</title>
+	<script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>	
+    <style>
+	body{
+	    
+	}
+        #mbody {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+			positon:relative;
+	
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+		
+		button.azul {
+			background-color: #034694;
+		}
+		
+        .output {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-left: 3px solid #4CAF50;
+            color: #666;
+            page-break-inside: avoid;
+            font-family: monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 1.6em;
+            max-width: 100%;
+            overflow: auto;
+            padding: 1em 1.5em;
+            display: block;
+            word-wrap: break-word;
+        }
+        #fileInput, #zipInput {
+            display: none;
+        }
+
+		/* Estilos específicos para móviles (máximo ancho de 600px) */
+		@media only screen and (max-width: 600px) {
+			#mbody {
+				width: 100%; /* Ancho completo en dispositivos móviles */
+				background-color: #F5F5FF;
+			}
+		}
+
+		/* Estilos específicos para tablets (ancho entre 601px y 1024px) */
+		@media only screen and (min-width: 601px) and (max-width: 1024px) {
+			#mbody {
+				width: 70%; /* Ajuste del ancho para tablets */
+				background-color: #F5FFF5;
+			}
+		}
+
+		/* Estilos específicos para PC (ancho mayor a 1024px) */
+		@media only screen and (min-width: 1025px) {
+			#mbody {
+				width: 80%; /* Ajuste del ancho para PCs */
+				background-color: #F5F5FF ;
+						background-color: #ffffff;
+			}
+		}		
+
+		#logo{
+		  padding:5px;
+		  position:abosolute;
+		  top:0;
+		  left:0;
+		  display: flex;
+		  align-items: center;  
+		}
+		#logo img {width:60px;}
+		#logo p {margin-left:6px;}
+		 
+		.icon-button  {
+			width: 16px;
+			height: 16px;
+			margin-right: 8px;
+		}
+    </style>
+</head>
+<body>
+<div id="mbody">
+    <div id="logo"><img src="f.jpg"><p>FC Sotware</p></div>
+    <h1>HTML Separador</h1>
+    <label for="input">Pegar el HTML aca:</label>
+    <textarea id="input" placeholder="Pegar el HTML aca..."></textarea>
+    <div>
+        <button onclick="separateHTML()"><i data-lucide="rows-3" class="icon-button"></i> Separar</button>
+        <button onclick="document.getElementById('fileInput').click()"><i data-lucide="file-up" class="icon-button"></i> Leer</button>
+		<button class="azul" onclick="saveZip()"><i data-lucide="save" class="icon-button"></i> Grabar Zip</button>		
+        <input type="file" id="fileInput" accept=".html,.htm" onchange="readFile(this)">
+       <input type="file" id="zipInput" accept=".zip" onchange="readZip(this)">
+        <button class="azul" onclick="document.getElementById('zipInput').click()">
+            <i data-lucide="file-up" class="icon-button"></i>
+            Leer Zip
+        </button>	   
+    </div>
+    <div id="output" class="output">
+        <h2>HTML:</h2>
+        <pre id="htmlOutput"></pre>
+        <h2>CSS:</h2>
+        <pre id="cssOutput"></pre>
+        <h2>JavaScript:</h2>
+        <pre id="jsOutput"></pre>
+    </div>
+
+    <script>
+	    lucide.createIcons();
+		
+        function separateHTML() {
+            const input = document.getElementById('input').value;
+            const htmlOutput = document.getElementById('htmlOutput');
+            const cssOutput = document.getElementById('cssOutput');
+            const jsOutput = document.getElementById('jsOutput');
+
+            // Reset outputs
+            htmlOutput.textContent = '';
+            cssOutput.textContent = '';
+            jsOutput.textContent = '';
+
+            // Extract CSS
+            const cssRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+            let cssMatch;
+            while ((cssMatch = cssRegex.exec(input)) !== null) {
+                cssOutput.textContent += cssMatch[1] + '\n\n';
+            }
+
+            // Extract JavaScript
+            const jsRegex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+            let jsMatch;
+            while ((jsMatch = jsRegex.exec(input)) !== null) {
+                jsOutput.textContent += jsMatch[1] + '\n\n';
+            }
+
+            // Extract HTML (remove CSS and JavaScript)
+            let htmlContent = input.replace(cssRegex, '').replace(jsRegex, '');
+            htmlOutput.textContent = htmlContent.trim();
+
+            // Escape HTML entities for display
+            //htmlOutput.textContent = htmlOutput.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function readFile(input) {
+            let file = input.files[0];
+            let reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = function() {
+                document.getElementById('input').value = reader.result;
+            };
+            reader.onerror = function() {
+                console.log(reader.error);
+            };
+        }
+		
+		function saveZip() {
+            const htmlContent = document.getElementById('htmlOutput').textContent;
+            const cssContent = document.getElementById('cssOutput').textContent;
+            const jsContent = document.getElementById('jsOutput').textContent;
+
+            let filename = prompt("Enter a filename (without extension):", "separated_content");
+            if (!filename) return; // User cancelled
+
+            filename = filename.replace(/\.html$/, ''); // Remove .html if present
+            filename += '.html'; // Add .html extension
+
+            const zip = new JSZip();
+            zip.file(filename, htmlContent);
+            zip.file("styles.css", cssContent);
+            zip.file("script.js", jsContent);
+
+            zip.generateAsync({type:"blob"})
+            .then(function(content) {
+                saveAs(content, filename.replace('.html', '.zip'));
+            });
+        }
+		
+		function readZip(input) {
+            let file = input.files[0];
+            let reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.onload = function() {
+                JSZip.loadAsync(reader.result)
+                .then(function(zip) {
+                    let htmlPromise = zip.file(/\.html$/i)[0].async("string");
+                    let cssPromise = zip.file("styles.css").async("string");
+                    let jsPromise = zip.file("script.js").async("string");
+
+                    Promise.all([htmlPromise, cssPromise, jsPromise])
+                    .then(function([htmlContent, cssContent, jsContent]) {
+                        document.getElementById('input').value = htmlContent;
+                        document.getElementById('htmlOutput').textContent = htmlContent;
+                        document.getElementById('cssOutput').textContent = cssContent;
+                        document.getElementById('jsOutput').textContent = jsContent;
+                    })
+                    .catch(function(error) {
+                        console.error("Error reading zip contents:", error);
+                        alert("Error reading zip file. Make sure it contains the correct files.");
+                    });
+                });
+            };
+            reader.onerror = function() {
+                console.log(reader.error);
+            };
+        }
+		
+    </script>
+	</div>
+</body>
+</html>
